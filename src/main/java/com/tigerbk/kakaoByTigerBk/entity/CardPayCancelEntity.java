@@ -26,9 +26,13 @@ public class CardPayCancelEntity {
 	@Column(name = "regUserId", length = 100, nullable = false)
 	private String regUserId;
 
-	// 카드번호(10~16번자)
-	@Column(name = "paymentType", length = 20, nullable = false)
-	private String paymentType;
+	// 카드 취소 상태(2자리)
+	@Column(name = "state", length = 2, nullable = false)
+	private String state;
+	
+	// 전체/부분 취소 구분자
+	@Column(name = "cancelType", length = 2, nullable = false)
+	private String cancelType;
 
 	// 10억원이하 숫자
 	@Column(name = "cardAmount", length = 10, nullable = false)

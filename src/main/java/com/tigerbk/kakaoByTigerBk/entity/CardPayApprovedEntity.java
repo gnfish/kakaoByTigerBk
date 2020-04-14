@@ -26,6 +26,10 @@ public class CardPayApprovedEntity {
 	@Column(name = "regUserId", length = 100, nullable = false)
 	private String regUserId;
 
+	// 카드 승인 상태(2자리)
+	@Column(name = "state", length = 2, nullable = false)
+	private String state;
+
 	// 카드번호(10~16번자)
 	@Column(name = "cardNumber", length = 20, nullable = false)
 	private String cardNumber;
