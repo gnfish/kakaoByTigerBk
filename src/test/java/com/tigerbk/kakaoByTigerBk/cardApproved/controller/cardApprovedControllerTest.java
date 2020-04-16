@@ -35,10 +35,10 @@ public class cardApprovedControllerTest {
     @Autowired
     private CardPayApprovedRepository cardPayApprovedRepository;
 
-//    @AfterEach()
-//    public void tearDown() throws Exception {
-//        cardPayApprovedRepository.deleteAll();
-//    }
+    @AfterEach()
+    public void tearDown() throws Exception {
+        cardPayApprovedRepository.deleteAll();
+    }
 
     @Test
     public void CardPayApprovedEntity_cardApprove() throws Exception {
