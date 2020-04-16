@@ -82,7 +82,13 @@ public class CardCancelServiceImpl implements CardCancelService {
 			// 3.1 승인금액 - 취소금액 = 취소 가능한 금액
 			// 취소가능금액 < 취소 금액
 			System.out.println("procCardCancel() 3. 취소할수 있는 금액 체크 시작");
-			Long ableCancelAmount = cardPayApprovedEntity.getCardAmount() - cardCancelAmount;
+			Long cardPayAmount = cardPayApprovedEntity.getCardAmount() ;
+			Long totalCancelAmount = cardPayApprovedEntity.getCardCancelAmount() ;
+			
+			Long ableCancelAmount = cardPayAmount - totalCancelAmount ;
+			
+			
+			
 			if (ableCancelAmount < cardCancelAmount) {
 				System.out.println("procCardCancel() 3. 취소할수 있는 금액 체크 오류 불가처리!");
 				throw new ErrorMessage(100, "취소 가능한 금액보다 취소금액이 더 큽니다!");
@@ -103,7 +109,7 @@ public class CardCancelServiceImpl implements CardCancelService {
 				cancelAllEntity.setApprovedKey(approvedKey);
 				cancelAllEntity.setCardCancelAmount(cardCancelAmount);
 				cancelAllEntity.setCardCancelVat(cardVatAmount);
-				cancelAllEntity.setApprovedState(StateEnum.CANCEL);
+				cancelAllEntity.setApprovedState(StateEnum.CANCEL.get());
 				cardApprovedUpdateRtn = cardapprovedservice.updateCanCelStateByApprovedKey(cancelAllEntity);
 				
 				if(cardApprovedUpdateRtn) {
@@ -138,7 +144,7 @@ public class CardCancelServiceImpl implements CardCancelService {
 				cancelAllEntity.setApprovedKey(approvedKey);
 				cancelAllEntity.setCardCancelAmount(updateCardCancelAmt);
 				cancelAllEntity.setCardCancelVat(updateCardCancelVat);
-				cancelAllEntity.setApprovedState(StateEnum.PARTCANCEL);
+				cancelAllEntity.setApprovedState(StateEnum.PARTCANCEL.get());
 				cardApprovedUpdateRtn = cardapprovedservice.updateCanCelStateByApprovedKey(cancelAllEntity);				
 				if(cardApprovedUpdateRtn) {
 					System.out.println("procCardCancel() 부분 취소처리 updateCanCelStateByApprovedKey 업데이트 성공 !!!");
@@ -151,11 +157,11 @@ public class CardCancelServiceImpl implements CardCancelService {
 
 			cardPayCancelEntity.setApprovedKey(approvedKey);
 			cardPayCancelEntity.setCancelKey(cancelKey);
-			cardPayCancelEntity.setCancelState(StateEnum.PARTCANCEL);
-			// cardPayCancelEntity.setCancelType(StateEnum.PARTCANCEL);
+			cardPayCancelEntity.setCancelState(StateEnum.PARTCANCEL.get());
+			 cardPayCancelEntity.setCancelType("00");
 			cardPayCancelEntity.setCardAmount(cardCancelAmount);
 			cardPayCancelEntity.setCardVat(cardVatAmount);
-			cardPayCancelEntity.setRegUserId(regUserId);
+			cardPayCancelEntity.setRegUserId("rambo");
 
 			// 취소 내역 적재
 			System.out.println("procCardCancel() 최종 취소 내역 적재 시작");

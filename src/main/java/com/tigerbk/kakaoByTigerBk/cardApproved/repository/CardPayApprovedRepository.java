@@ -18,14 +18,14 @@ public interface CardPayApprovedRepository extends JpaRepository<CardPayApproved
 
 	
 	@Modifying
-	@Query(value = " UPDATE card_pay_approved_entity " 
-			+ " SET approved_State = :approvedState "
-			+ " ,  card_Cancel_Amount = :cardCancelAmount "
-			+ " ,  card_Cancel_Vat = :cardCancelVat "
-			+ " WHERE approved_Key = :approvedKey", nativeQuery = true)
+	@Query(value = " UPDATE card_pay_approved_entity SET " 
+			+ "  	 approved_State 		    = :approvedState "
+			+ " ,  card_Cancel_Amount 	= :cardCancelAmount "
+			+ " ,  card_Cancel_Vat 			= :cardCancelVat "
+			+ " WHERE approved_Key 	= :approvedKey", nativeQuery = true)
 	void updateCanCelStateByApprovedKey(
 			@Param("approvedKey") Long approvedKey, 
-			@Param("approvedState") StateEnum approvedState,
+			@Param("approvedState") String approvedState,
 			@Param("cardCancelAmount") Long cardCancelAmount, 
 			@Param("cardCancelVat") Long cardCancelVat)
 			throws Exception;

@@ -36,13 +36,18 @@ public class CardApprovedServiceImpl implements CardApprovedService {
 
 		CardPayApprovedEntity cardPayApprovedEntity = new CardPayApprovedEntity();
 
+		
+		
+		System.out.println("procCardApprove()카드 승인요청 처리 StateEnum.APPORVE : " + StateEnum.APPORVE);
+		
+		
 		cardPayApprovedEntity.setApprovedKey(approvedKey);
 		cardPayApprovedEntity.setRegUserId(cardpayapprovedvo.getRegUserId());
-		cardPayApprovedEntity.setCardNumber(cardpayapprovedvo.getCardNumber());
+		cardPayApprovedEntity.setCardNumber(cardpayapprovedvo.getCardNumber()); 
 		cardPayApprovedEntity.setCardExpiredDate(cardpayapprovedvo.getCardExpiredDate());
 		cardPayApprovedEntity.setCardCvc(cardpayapprovedvo.getCardCvc());
 		cardPayApprovedEntity.setCardAmount(cardpayapprovedvo.getCardAmount());
-		cardPayApprovedEntity.setApprovedState(StateEnum.APPORVE);
+		cardPayApprovedEntity.setApprovedState(StateEnum.APPORVE.get());
 		cardPayApprovedEntity.setCardPeriod(cardpayapprovedvo.getCardPeriod());
 		cardPayApprovedEntity.setCardCancelAmount(0L);
 		cardPayApprovedEntity.setCardCancelVat(0L);

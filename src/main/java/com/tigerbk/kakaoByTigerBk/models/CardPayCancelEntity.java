@@ -40,7 +40,7 @@ public class CardPayCancelEntity {
 
 	// 카드 취소 상태(2자리)
 	@Column(name = "cancelState", length = 2, nullable = false)
-	private StateEnum cancelState;
+	private String cancelState;
 
 	// 전체/부분 취소 구분자
 	@Column(name = "cancelType", length = 2, nullable = false)

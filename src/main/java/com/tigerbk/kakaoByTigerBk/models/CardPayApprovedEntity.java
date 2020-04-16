@@ -38,8 +38,9 @@ public class CardPayApprovedEntity {
 	private String regUserId;
 
 	// 카드 승인 상태(2자리)
-	@Column(name = "approvedState", length = 10, nullable = false)
-	private StateEnum approvedState;
+//	@Enumerated(EnumType.STRING)
+	@Column(name = "approvedState")
+	private String approvedState;
 
 	// 카드번호(10~16번자)
 	@Column(name = "cardNumber", nullable = false, updatable = false)
