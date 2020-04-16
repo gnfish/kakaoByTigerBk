@@ -32,6 +32,8 @@ dependencies {
 	
 	    //juni 5 관련 추가 아래 한줄....
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
     
     
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
