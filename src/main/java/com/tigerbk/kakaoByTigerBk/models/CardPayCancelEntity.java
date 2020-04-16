@@ -51,7 +51,7 @@ public class CardPayCancelEntity {
 	private Long cardAmount;
 
 	// 부가가치세
-	@Column(name = "cardVat", length = 10, nullable = false)
+	@Column(name = "cardVat", length = 10, nullable = true)
 	private Long cardVat;
 
 	// 거래 시각

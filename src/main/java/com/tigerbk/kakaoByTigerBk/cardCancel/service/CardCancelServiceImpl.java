@@ -30,18 +30,19 @@ public class CardCancelServiceImpl implements CardCancelService {
 	@Transactional()
 	public CardPayCancelEntity procCardCancel(CardPayCancelVO cardPayCancelVO) {
 
-		CardPayCancelEntity cardPayCancelEntity = new CardPayCancelEntity();
 		Long cancelKey = 0L;
 		Long approvedKey = 0L;
-		Long cardVatAmount = 0L;
+		Long cardCancelVat = 0L;
 		Long cardCancelAmount = 0L;
 		String regUserId = "";
 
 		approvedKey = cardPayCancelVO.getApprovedKey();
-		cardVatAmount = cardPayCancelVO.getCardVat();
+		cardCancelVat = cardPayCancelVO.getCardVat();
 		cardCancelAmount = cardPayCancelVO.getCardAmount();
 		regUserId = cardPayCancelVO.getRegUserId();
 		cancelKey = UtilsLib.getUniqueID();
+
+		CardPayCancelEntity cardPayCancelEntity = new CardPayCancelEntity();
 
 		try {
 
@@ -52,29 +53,19 @@ public class CardCancelServiceImpl implements CardCancelService {
 			// 1.기존 승인내역이 존재하는지 체크
 			CardPayApprovedVO cardpayapprovedvo = new CardPayApprovedVO();
 			cardpayapprovedvo.setApprovedKey(approvedKey);
-			System.out.println("procCardCancel()  : cardpayapprovedvo : " + cardpayapprovedvo.toString());
 
 			CardPayApprovedEntity cardPayApprovedEntity = null;
 			cardPayApprovedEntity = cardapprovedservice.searchCardApproveByApprovedKey(cardpayapprovedvo);
-			System.out.println("procCardCancel()  : CardPayApprovedEntity : " + cardPayApprovedEntity);
 
 			// 1.2.존재여부 체크
 			System.out.println("procCardCancel() 1.2 존재여부체크 시작");
 			if (cardPayApprovedEntity == null) {
-				// throw new Exception(HttpStatus.NOT_ACCEPTABLE, "카드승인건이 없어 취소처리 할 수 없습니다.");
-				System.out.println("procCardCancel()  : CardPayApprovedEntity : " + cardPayApprovedEntity);
-				// throw new ErrorMessage(HttpStatus.NOT_FOUND, "카드승인건이 없어 취소처리 할 수 없습니다.");
 				throw new ErrorMessage(100, "카드승인건이 없어 취소처리 할 수 없습니다!");
-				// return cardPayCancelEntity;
 			}
 
 			// 1.3. 카드승인 상태가 취소처리 가능한 상태인지 체크( 카드승인 상태가 :전체 취소 이외만 처리 가능)
 			System.out.println("procCardCancel() 1.3 카드승인 상태가 취소처리 가능한 상태인지 체크 시작");
 			if (cardPayApprovedEntity.getApprovedState().equals(StateEnum.CANCEL)) {
-				System.out.println("procCardCancel()  : cardPayApprovedEntity.getApprovedState() : "
-						+ cardPayApprovedEntity.getApprovedState());
-				// throw new ErrorMessage(HttpStatus.NOT_ACCEPTABLE, "이미 취소처리 된 거래로 취소처리 할 수
-				// 없습니다.");
 				throw new ErrorMessage(100, "이미 취소처리 된 거래로 취소처리 불가!");
 			}
 
@@ -82,13 +73,10 @@ public class CardCancelServiceImpl implements CardCancelService {
 			// 3.1 승인금액 - 취소금액 = 취소 가능한 금액
 			// 취소가능금액 < 취소 금액
 			System.out.println("procCardCancel() 3. 취소할수 있는 금액 체크 시작");
-			Long cardPayAmount = cardPayApprovedEntity.getCardAmount() ;
-			Long totalCancelAmount = cardPayApprovedEntity.getCardCancelAmount() ;
-			
-			Long ableCancelAmount = cardPayAmount - totalCancelAmount ;
-			
-			
-			
+			Long cardPayAmount = cardPayApprovedEntity.getCardAmount();
+			Long totalCancelAmount = cardPayApprovedEntity.getCardCancelAmount();
+			Long ableCancelAmount = cardPayAmount - totalCancelAmount;
+
 			if (ableCancelAmount < cardCancelAmount) {
 				System.out.println("procCardCancel() 3. 취소할수 있는 금액 체크 오류 불가처리!");
 				throw new ErrorMessage(100, "취소 가능한 금액보다 취소금액이 더 큽니다!");
@@ -98,9 +86,9 @@ public class CardCancelServiceImpl implements CardCancelService {
 			System.out.println("procCardCancel() 3. 취소 처리 시작");
 			// 1.1 전체 취소 처리
 			boolean cardApprovedUpdateRtn = false;
-			
+
 			if (cardCancelAmount == cardPayApprovedEntity.getCardAmount()) {
-				System.out.println("procCardCancel() 3.1 전체 취소 처리 시작 : " +  StateEnum.CANCEL);
+				System.out.println("procCardCancel() 3.1 전체 취소 처리 시작 : " + StateEnum.CANCEL);
 				// 전체 취소처리
 				// approvedState : StateEnum.CANCEL
 				// cardCancelAmount : 취소 금액
@@ -108,64 +96,77 @@ public class CardCancelServiceImpl implements CardCancelService {
 				CardPayApprovedEntity cancelAllEntity = new CardPayApprovedEntity();
 				cancelAllEntity.setApprovedKey(approvedKey);
 				cancelAllEntity.setCardCancelAmount(cardCancelAmount);
-				cancelAllEntity.setCardCancelVat(cardVatAmount);
+				cancelAllEntity.setCardCancelVat(cardCancelVat);
 				cancelAllEntity.setApprovedState(StateEnum.CANCEL.get());
 				cardApprovedUpdateRtn = cardapprovedservice.updateCanCelStateByApprovedKey(cancelAllEntity);
-				
-				if(cardApprovedUpdateRtn) {
+
+				if (cardApprovedUpdateRtn) {
 					System.out.println("procCardCancel() 전체 취소처리 updateCanCelStateByApprovedKey 업데이트 성공 !!!");
-				}else {
+				} else {
 					System.out.println("procCardCancel() 전체 취소처리 updateCanCelStateByApprovedKey 업데이트 실패 !!!");
 					throw new ErrorMessage(100, "전체 취소처리 updateCanCelStateByApprovedKey 업데이트 실패 !!.");
 				}
-				
+
 			} else {
-				System.out.println("procCardCancel() 3.1 부분 취소 처리 시작 : " +  StateEnum.PARTCANCEL);
+				System.out.println("procCardCancel() 3.1 부분 취소 처리 시작 : " + StateEnum.PARTCANCEL);
 				// 부분 취소 처리
 				// approvedState : StateEnum.PARTCANCEL
 				// cardCancelAmount : 취소 금액
 				// cardCancelVat : 취소 VAT
-				Long updateCardCancelAmt = 0L;
-				Long updateCardCancelVat = 0L;
+		//		Long updateCardCancelAmt = 0L;
+			
 
 				// 부가세가 없을 경우 계산
 				// 결제금액/ 11, 소수점 이하 반올림 계산
 				// 1000원일 경우 91원
 				// 부가가치세는 결제금액보다 클수 없습니다.
 				// 결제금액이 1000원일때 부가가치세는 0원 일수 있음.
-				if (cardVatAmount == 0) {
-					updateCardCancelVat = UtilsLib.CalcVat(cardPayCancelVO.getCardAmount());
+				if (cardCancelVat == 0 || cardCancelVat == null) {
+					cardCancelVat = UtilsLib.CalcVat(cardCancelAmount);
 				}
 				
-				updateCardCancelAmt = cardPayApprovedEntity.getCardCancelAmount() + cardCancelAmount;
-				updateCardCancelVat = cardPayApprovedEntity.getCardCancelVat() + cardVatAmount;
+				// 취소 할수 있는 vat 값하고 취소할 vat 하고 체크
+				Long cardPayVat = cardPayApprovedEntity.getCardVat();
+				
+				Long totalCancelVat= cardPayApprovedEntity.getCardCancelVat();
+				Long ableCancelVat= cardPayVat - totalCancelVat;
+				
+				
+				if(cardCancelVat > ableCancelVat) {
+					throw new ErrorMessage(100, "취소처리할 VAT금액이 부족하여 취소 할수 없습니다. (가능한 VAT: "+ ableCancelVat+" 원)");
+				}
+
+				
+				
+				Long totalCardCancelAmt = cardPayApprovedEntity.getCardCancelAmount() + cardCancelAmount;
+				Long  totalCardCancelVat = cardPayApprovedEntity.getCardCancelVat() + cardCancelVat;
 
 				CardPayApprovedEntity cancelAllEntity = new CardPayApprovedEntity();
 				cancelAllEntity.setApprovedKey(approvedKey);
-				cancelAllEntity.setCardCancelAmount(updateCardCancelAmt);
-				cancelAllEntity.setCardCancelVat(updateCardCancelVat);
+				cancelAllEntity.setCardCancelAmount(totalCardCancelAmt);
+				cancelAllEntity.setCardCancelVat(totalCardCancelVat);
 				cancelAllEntity.setApprovedState(StateEnum.PARTCANCEL.get());
-				cardApprovedUpdateRtn = cardapprovedservice.updateCanCelStateByApprovedKey(cancelAllEntity);				
-				if(cardApprovedUpdateRtn) {
+				cardApprovedUpdateRtn = cardapprovedservice.updateCanCelStateByApprovedKey(cancelAllEntity);
+				
+				if (cardApprovedUpdateRtn) {
 					System.out.println("procCardCancel() 부분 취소처리 updateCanCelStateByApprovedKey 업데이트 성공 !!!");
-				}else {
+				} else {
 					System.out.println("procCardCancel() 부분 취소처리 updateCanCelStateByApprovedKey 업데이트 실패 !!!");
 					throw new ErrorMessage(100, "부분 취소처리 updateCanCelStateByApprovedKey 업데이트 실패 !!.");
-				}					
+				}
 
 			}
 
 			cardPayCancelEntity.setApprovedKey(approvedKey);
 			cardPayCancelEntity.setCancelKey(cancelKey);
 			cardPayCancelEntity.setCancelState(StateEnum.PARTCANCEL.get());
-			 cardPayCancelEntity.setCancelType("00");
+			cardPayCancelEntity.setCancelType("00");
 			cardPayCancelEntity.setCardAmount(cardCancelAmount);
-			cardPayCancelEntity.setCardVat(cardVatAmount);
+			cardPayCancelEntity.setCardVat(cardCancelVat);
 			cardPayCancelEntity.setRegUserId("rambo");
 
 			// 취소 내역 적재
-			System.out.println("procCardCancel() 최종 취소 내역 적재 시작");
-			cardPayCancelEntity = cardpaycancelrepository.save(cardPayCancelEntity);
+			cardPayCancelEntity = saveCardCancelEntity(cardPayCancelEntity);
 
 		} catch (Exception e) {
 			System.out.println("procCardCancel() Exception e : " + e.getMessage());
@@ -173,6 +174,19 @@ public class CardCancelServiceImpl implements CardCancelService {
 			throw new ErrorMessage(100, e.getMessage());
 		}
 		return cardPayCancelEntity;
+	}
+
+	/**
+	 * 카드취소내역 저장
+	 * 
+	 * @param cardPayCancelEntity
+	 * @return cardPayCancelEntity
+	 */
+
+	private CardPayCancelEntity saveCardCancelEntity(CardPayCancelEntity cardPayCancelEntity) {
+		System.out.println("procCardCancel() 최종 취소 내역 적재 시작");
+		CardPayCancelEntity returnEntity = cardpaycancelrepository.save(cardPayCancelEntity);
+		return returnEntity;
 	}
 
 	// 2. 카드 취소 내역 조회 서비스

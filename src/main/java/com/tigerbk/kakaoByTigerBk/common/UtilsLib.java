@@ -55,6 +55,11 @@ public class UtilsLib {
 	    return md.digest();
 	}
 
+	
+	
+	
+	
+	
 
 	/**
 	 * 대외 전문 전송이나 연계를 위한 변환 API. VO 객체를 byte[]로 생성.

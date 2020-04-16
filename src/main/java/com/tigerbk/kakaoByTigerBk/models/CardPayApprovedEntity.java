@@ -65,7 +65,8 @@ public class CardPayApprovedEntity {
 	private Long cardAmount;
 
 	// 부가가치세
-	@Column(name = "cardVat", nullable = false, updatable = false)
+	@ColumnDefault("0") //default 0
+	@Column(name = "cardVat", nullable = true,  updatable = false)
 	private Long cardVat;
 	
 	// 취소 금액
