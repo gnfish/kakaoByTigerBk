@@ -61,12 +61,13 @@ public class CardPayApprovedEntity {
 	private String cardPeriod;
 
 	// 10억원이하 숫자
+	@ColumnDefault("0") //default 0
 	@Column(name = "cardAmount", nullable = false, updatable = false)
 	private Long cardAmount;
 
 	// 부가가치세
 	@ColumnDefault("0") //default 0
-	@Column(name = "cardVat", nullable = true,  updatable = false)
+	@Column(name = "cardVat", nullable = false,  updatable = false)
 	private Long cardVat;
 	
 	// 취소 금액

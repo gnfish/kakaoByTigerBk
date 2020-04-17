@@ -1,20 +1,18 @@
 package com.tigerbk.kakaoByTigerBk.cardApproved.service;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tigerbk.kakaoByTigerBk.CardPaySendData.service.CardPaySendDataService;
 import com.tigerbk.kakaoByTigerBk.cardApproved.repository.CardPayApprovedRepository;
 import com.tigerbk.kakaoByTigerBk.cardApproved.vo.CardPayApprovedVO;
 import com.tigerbk.kakaoByTigerBk.cardDealHistory.repository.CardPayDealHistoryRepository;
 import com.tigerbk.kakaoByTigerBk.common.ErrorMessage;
 import com.tigerbk.kakaoByTigerBk.common.StateEnum;
 import com.tigerbk.kakaoByTigerBk.common.UtilsLib;
-import com.tigerbk.kakaoByTigerBk.exception.RestException;
 import com.tigerbk.kakaoByTigerBk.models.CardPayApprovedEntity;
+import com.tigerbk.kakaoByTigerBk.models.CardPaySendDataEntity;
 
 @Service
 public class CardApprovedServiceImpl implements CardApprovedService {
@@ -24,6 +22,11 @@ public class CardApprovedServiceImpl implements CardApprovedService {
 
 	@Autowired
 	CardPayDealHistoryRepository cardpaydealhistoryrepository;
+	
+	@Autowired
+	CardPaySendDataService cardPaySendDataService;
+	
+	
 
 	// 1. 카드 승인요청 처리
 	@Override
@@ -36,14 +39,11 @@ public class CardApprovedServiceImpl implements CardApprovedService {
 
 		CardPayApprovedEntity cardPayApprovedEntity = new CardPayApprovedEntity();
 
-		
-		
 		System.out.println("procCardApprove()카드 승인요청 처리 StateEnum.APPORVE : " + StateEnum.APPORVE);
-		
-		
+
 		cardPayApprovedEntity.setApprovedKey(approvedKey);
 		cardPayApprovedEntity.setRegUserId(cardpayapprovedvo.getRegUserId());
-		cardPayApprovedEntity.setCardNumber(cardpayapprovedvo.getCardNumber()); 
+		cardPayApprovedEntity.setCardNumber(cardpayapprovedvo.getCardNumber());
 		cardPayApprovedEntity.setCardExpiredDate(cardpayapprovedvo.getCardExpiredDate());
 		cardPayApprovedEntity.setCardCvc(cardpayapprovedvo.getCardCvc());
 		cardPayApprovedEntity.setCardAmount(cardpayapprovedvo.getCardAmount());
@@ -51,26 +51,31 @@ public class CardApprovedServiceImpl implements CardApprovedService {
 		cardPayApprovedEntity.setCardPeriod(cardpayapprovedvo.getCardPeriod());
 		cardPayApprovedEntity.setCardCancelAmount(0L);
 		cardPayApprovedEntity.setCardCancelVat(0L);
-		
 
 		Long vatAmount = 0L;
 
 		try {
 			// 부가세가 없을 경우 계산
-			if (cardpayapprovedvo.getCardVat() == 0 || cardpayapprovedvo.getCardVat() == null || Objects.isNull(cardpayapprovedvo.getCardVat())) {
+			if (cardpayapprovedvo.getCardVat() == null) {
 				vatAmount = UtilsLib.CalcVat(cardpayapprovedvo.getCardAmount());
 			} else {
 				vatAmount = cardpayapprovedvo.getCardVat();
 			}
 			cardPayApprovedEntity.setCardVat(vatAmount);
 
-			// 전문 조립후 외부통신내역 테이블 적재
-
+			// 전문 조립후 외부통신내역 테이블 적재								
+			cardPaySendDataService.sendData(cardPayApprovedEntity);
+			
+			
 			// 내부 카드 승인내역 테이블 적재
 			CardPayApprovedEntity rData = cardpayapprovedrepository.save(cardPayApprovedEntity);
+			
+			
+			
+			
 
 		} catch (Exception e) {
-		
+			e.printStackTrace();
 			throw new ErrorMessage(100, "카드승인이 실패되었습니다.");
 		}
 
@@ -93,18 +98,15 @@ public class CardApprovedServiceImpl implements CardApprovedService {
 
 	// 카드 승인 취소 처리 업데이트
 	@Override
-	public Boolean updateCanCelStateByApprovedKey(CardPayApprovedEntity cardPayApprovedEntity ) {
+	public Boolean updateCanCelStateByApprovedKey(CardPayApprovedEntity cardPayApprovedEntity) {
 		Boolean rtn = true;
 		try {
-			cardpayapprovedrepository.updateCanCelStateByApprovedKey(cardPayApprovedEntity.getApprovedKey()
-					, cardPayApprovedEntity.getApprovedState()
-					, cardPayApprovedEntity.getCardCancelAmount()
-					, cardPayApprovedEntity.getCardCancelVat()
-			);
-		} catch(Exception e) {
+			cardpayapprovedrepository.updateCanCelStateByApprovedKey(cardPayApprovedEntity.getApprovedKey(),
+					cardPayApprovedEntity.getApprovedState(), cardPayApprovedEntity.getCardCancelAmount(),
+					cardPayApprovedEntity.getCardCancelVat());
+		} catch (Exception e) {
 			rtn = false;
-		} 
-
+		}
 
 		return true;
 	}

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -47,11 +48,13 @@ public class CardPayCancelEntity {
 	private String cancelType;
 
 	// 10억원이하 숫자
-	@Column(name = "cardAmount", length = 10, nullable = false)
+	@ColumnDefault("0") //default 0
+	@Column(name = "cardAmount", nullable = false)
 	private Long cardAmount;
 
 	// 부가가치세
-	@Column(name = "cardVat", length = 10, nullable = true)
+	@ColumnDefault("0") //default 0
+	@Column(name = "cardVat",  nullable = false)
 	private Long cardVat;
 
 	// 거래 시각

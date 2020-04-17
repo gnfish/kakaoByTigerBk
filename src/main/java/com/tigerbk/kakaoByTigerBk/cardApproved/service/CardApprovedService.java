@@ -7,13 +7,13 @@ import com.tigerbk.kakaoByTigerBk.models.CardPayApprovedEntity;
 
 public interface CardApprovedService {
 	
-	// 1. 카드 승인요청 처리
+	// 1. 카드 승인요청 처리 서비스
 	public CardPayApprovedEntity  procCardApprove( CardPayApprovedVO cardpayapprovedvo);
 
 	// 2. 카드 승인 내역 조회 서비스 
 	public CardPayApprovedEntity  searchCardApproveByApprovedKey( CardPayApprovedVO cardpayapprovedvo);
 	
-	
+	// 3. 카드 승인 취소 처리 서비스 
 	public Boolean updateCanCelStateByApprovedKey (CardPayApprovedEntity cardPayApprovedEntity);
 		
 	
