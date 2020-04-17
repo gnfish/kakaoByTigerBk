@@ -2,8 +2,17 @@ package com.tigerbk.kakaoByTigerBk.cardApproved.controller;
 
 import com.tigerbk.kakaoByTigerBk.cardApproved.repository.CardPayApprovedRepository;
 import com.tigerbk.kakaoByTigerBk.cardApproved.vo.CardPayApprovedVO;
+import com.tigerbk.kakaoByTigerBk.common.ErrorCodeEnum;
+import com.tigerbk.kakaoByTigerBk.common.vo.ResultVO;
 import com.tigerbk.kakaoByTigerBk.models.CardPayApprovedEntity;
 import lombok.extern.slf4j.Slf4j;
+
+//import org.json.JSONObject;
+//import org.json.simple.parser.JSONParser;
+//import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,12 +72,20 @@ public class cardApprovedControllerTest {
         String url = "http://localhost:" + port + "/cardApprove";
 
         //when
-        ResponseEntity<CardPayApprovedVO> responseEntity = restTemplate.postForEntity(url, requestDto, CardPayApprovedVO.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, requestDto, String.class);
+        JSONParser jsonParssr = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonParssr.parse(responseEntity.getBody());
 
         //then
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(responseEntity.getBody()).isGreaterThan(0L);
+        // check SUCCESS
+        ErrorCodeEnum resultCode = ErrorCodeEnum.PROC_SUCCESS;
+        assertThat((String) ((JSONObject) jsonObj.get("resultVO")).get("resultCode")).isEqualTo(resultCode.getCode());
+        assertThat((String) ((JSONObject) jsonObj.get("resultVO")).get("resultMsg")).isEqualTo(resultCode.getMessage());
+        assertThat((Long) jsonObj.get("approvedNo")).isGreaterThan(0L);
+//        System.out.println(">>>>>>>>>>> " + responseEntity.getBody());
 
+        // check db data
         List<CardPayApprovedEntity> all = cardPayApprovedRepository.findAll();
         assertThat(all.get(0).getRegUserId()).isEqualTo(regUserId);
         assertThat(all.get(0).getCardNumber()).isEqualTo(cardNumber);
