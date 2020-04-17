@@ -25,7 +25,6 @@ public class CardPaySendDataEntity {
 
 	// 20자리
 	@Id
-	@NonNull
 	@Column(name = "sendDataKey")
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Long sendDataKey;
@@ -34,10 +33,16 @@ public class CardPaySendDataEntity {
 	@Column(name = "createdTimeAt", length = 8, nullable = false, updatable = false)
 	private LocalDateTime createdTimeAt;
 
+	// PAYMENT : 카드 승인 요청
+	// CALCEL : 카드 취소 요청
+	@Column(name = "bizNo", nullable = false, updatable = false)
+	private String bizNo;
+	
 	// 0200 : 카드 승인 요청
 	// 0210 : 카드 취소 요청
-	@Column(name = "bizNo", length = 4, nullable = false, updatable = false)
-	private String bizNo;
+	@Column(name = "dealKey", nullable = false, updatable = false)
+	private Long dealKey;
+	
 
 	// 총 450 byte
 	@Column(name = "sendData", length = 450, nullable = false, updatable = false)

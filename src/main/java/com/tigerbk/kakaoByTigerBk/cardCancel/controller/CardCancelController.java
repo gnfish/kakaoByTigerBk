@@ -27,7 +27,7 @@ public class CardCancelController {
 	CardCancelService cardcancelservice;
 
 	@PostMapping("/cardCancel")
-	public HashMap<String, Object>   procCardCancel(@RequestBody @Valid CardPayCancelVO cardPayCancelVO) {
+	public HashMap<String, Object> procCardCancel(@RequestBody @Valid CardPayCancelVO cardPayCancelVO) {
 		// 1. 초기 변수 셋팅
 		HashMap<String, Object> result = new HashMap<>();
 		ResultVO resultVO = new ResultVO();
@@ -38,13 +38,13 @@ public class CardCancelController {
 		// 2.취소 처리 프로세스
 		try {
 			CardPayCancelEntity cardpaycancelentity = cardcancelservice.procCardCancel(cardPayCancelVO);
-			result.put("cancelKey", cardpaycancelentity.getCancelKey());			
-		} catch (Exception e) {	
+			result.put("cancelKey", cardpaycancelentity.getCancelKey());
+		} catch (Exception e) {
 			result.put("cancelKey", "");
 			System.out.println("Error =>>>>>>>> " + e.getMessage());
 			errMessage = e.getMessage();
 			resultCode = ErrorCodeEnum.SYSTEM_ERROR;
-		
+
 		}
 
 		// 3. 최종 결과 전송
@@ -55,7 +55,7 @@ public class CardCancelController {
 	}
 
 	@GetMapping("/searchCardCancel/{cancelKey}")
-	public HashMap<String, Object>  searchCardCancel(@PathVariable("cancelKey") Long cancelKey) {
+	public HashMap<String, Object> searchCardCancel(@PathVariable("cancelKey") Long cancelKey) {
 		// 1. 초기 변수 셋팅
 		HashMap<String, Object> result = new HashMap<>();
 		ResultVO resultVO = new ResultVO();
@@ -75,7 +75,7 @@ public class CardCancelController {
 				result.put("returnVal", "");
 				resultCode = ErrorCodeEnum.NOT_FOUND;
 			} else {
-				result.put("returnVal", returnVal);			
+				result.put("returnVal", returnVal);
 			}
 
 		} catch (Exception e) {

@@ -23,13 +23,14 @@ import com.tigerbk.kakaoByTigerBk.models.CardPayApprovedEntity;
 @RestController
 public class CardApprovedController {
 
-	// 서비스 의존성 주입
 	@Autowired
 	CardApprovedService cardapprovedservice;
 
-	@PostMapping("/cardApprove")	
+	/*
+	 * 카드 승인 요청 URI IN : CardPayApprovedVO OUT : 처리결과 메세지 , 승인키
+	 */
+	@PostMapping("/cardApprove")
 	public HashMap<String, Object> CardApprovedController(@RequestBody @Valid CardPayApprovedVO cardpayapprovedvo) {
-
 		// 1. 초기 변수 셋팅
 		HashMap<String, Object> result = new HashMap<>();
 		ResultVO resultVO = new ResultVO();
@@ -44,7 +45,7 @@ public class CardApprovedController {
 			if (!"".equals(cardPayApprovedEntity.getApprovedKey())) {
 				result.put("approvedNo", cardPayApprovedEntity.getApprovedKey());
 			} else {
-				result.put("approvedNo", cardPayApprovedEntity.getApprovedKey());
+				result.put("approvedNo", "");
 				resultCode = ErrorCodeEnum.SYSTEM_ERROR;
 			}
 
@@ -61,7 +62,7 @@ public class CardApprovedController {
 	}
 
 	@GetMapping("/searchCardApprorve/{approvedKey}")
-	public HashMap<String, Object>  searchCardApprorveList(@PathVariable("approvedKey") Long approvedKey) {
+	public HashMap<String, Object> searchCardApprorveList(@PathVariable("approvedKey") Long approvedKey) {
 		// 1. 초기 변수 셋팅
 		HashMap<String, Object> result = new HashMap<>();
 		ResultVO resultVO = new ResultVO();
@@ -88,11 +89,12 @@ public class CardApprovedController {
 			result.put("returnVal", "");
 			resultCode = ErrorCodeEnum.SYSTEM_ERROR;
 		}
+
 		// 3. 최종 결과 전송
 		resultVO.setResultCode(resultCode.getCode());
 		resultVO.setResultMsg(resultCode.getMessage());
 		result.put("resultVO", resultVO);
-		
+
 		return result;
 	}
 

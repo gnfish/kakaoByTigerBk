@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CardPayApprovedVO {
 
+	// 카드 승인 요청키
 	private Long approvedKey;
 	@NotEmpty
 	@NotBlank
@@ -40,11 +41,10 @@ public class CardPayApprovedVO {
 	@NotNull
 	@Size(min = 2, max = 2)
 	private String cardPeriod;
-	// 10억원이하 숫자
+	// 카드 결제금액
 	@NotNull
 	private Long cardAmount;
-	// 10억원이하 숫자cardVat
-	@NotNull
+	// 카드 VAT
 	private Long cardVat;
 
 }

@@ -17,6 +17,8 @@ public interface CardPayApprovedRepository extends JpaRepository<CardPayApproved
 	CardPayApprovedEntity findByApprovedKeyAndApprovedState(Long approvedKey, StateEnum approvedState);
 
 	
+	// 카드 취소 처리시 
+	// IN : 카드승인키, 카드취소금액, 취소VAT , 상태
 	@Modifying
 	@Query(value = " UPDATE card_pay_approved_entity SET " 
 			+ "  	 approved_State 		    = :approvedState "

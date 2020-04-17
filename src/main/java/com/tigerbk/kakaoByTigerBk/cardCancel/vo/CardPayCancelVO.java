@@ -9,16 +9,16 @@ import lombok.Data;
 
 @Data
 public class CardPayCancelVO {
+	//카드 승인 키
 	@NotNull
-	private Long approvedKey;
-	
-	private Long cancelKey;	
-	
-	@Size(min = 3, max = 50)
+	private Long approvedKey;	
+	//카드 취소 키
+	private Long cancelKey;		
+	// 사용자ID
 	private String regUserId;
+	//카드 취소 금액
 	@NotNull
 	private Long cardAmount;
-	// 10억원이하 숫자cardVat
-	@NotNull
+	//카드 취소 vat
 	private Long cardVat;
 }
